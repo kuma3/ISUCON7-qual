@@ -1,3 +1,3 @@
 # ISUCON
-d(^_^o)d(^_^o)d(^_^o)は？
-simamon
+ISUCON7-qualifier's repository
+
