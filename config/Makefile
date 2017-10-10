@@ -1,21 +1,21 @@
 .DEFAULT_GOAL := help
+service_name = isu-ruby.service
 
 restart: ## copy configs from repository to conf
-	@sudo cp config/nginx.conf /etc/nginx/
-	@sudo cp config/my.cnf /etc/
+	# @sudo cp config/nginx.conf /etc/nginx/
+	# @sudo cp config/my.cnf /etc/
 	@make -s nginx-restart
 	@make -s db-restart
 	@make -s ruby-restart
 
 ruby-log: ## log Server
-	@sudo journalctl -u isuxi.ruby
+	@sudo journalctl -u $(service_name)
 
 ruby-restart: ## Restart Server
 	@sudo systemctl daemon-reload
-	@cd ruby; bundle 1> /dev/null
-	@sudo systemctl restart isuda.ruby.service
-	@sudo systemctl restart isutar.ruby.service
-	@echo 'Restart isu-ruby'
+	@cd ~/private_isu/webapp/ruby; bundle 1> /dev/null
+	@sudo systemctl restart $(service_name)
+	@echo 'Restart $(service_name)'
 
 nginx-restart: ## Restart nginx
 	@sudo systemctl restart nginx
