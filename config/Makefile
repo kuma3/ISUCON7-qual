@@ -2,8 +2,6 @@
 service_name = isu-ruby.service
 
 restart: ## copy configs from repository to conf
-	# @sudo cp config/nginx.conf /etc/nginx/
-	# @sudo cp config/my.cnf /etc/
 	@make -s nginx-restart
 	@make -s db-restart
 	@make -s ruby-restart
