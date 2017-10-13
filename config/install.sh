@@ -1,6 +1,8 @@
-sudo apt install -y ruby-dev
+# editor
+sudo apt install -y emacs vim
 
-# ruby-bundler
+# ruby
+sudo apt install -y ruby-dev
 sudo apt install -y ruby-bundler
 
 # alp
@@ -8,7 +10,7 @@ cd /tmp
 wget https://github.com/tkuchiki/alp/releases/download/v0.3.1/alp_linux_amd64.zip
 sudo apt install -y unzip
 unzip alp_linux_amd64
-mv alp /usr/local/bin/
+sudo mv -f alp /usr/local/bin/
 
 # nginx
 cd ~
@@ -34,5 +36,5 @@ sudo ./kickstart.sh all
 sudo apt install -y htop
 
 # restart
-cd ~/webapp
+cd ~
 make restart
