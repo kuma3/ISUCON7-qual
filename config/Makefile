@@ -35,6 +35,9 @@ db-restart: ## Restart mysql
 db-log: ## tail mysql.log
 	@sudo tail -f /var/log/mysql/mysql.log
 
+service-status: ## Show status of service
+	@sudo systemctl list-unit-files -t service
+
 .PHONY: help
 
 help:
