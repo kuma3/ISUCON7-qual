@@ -37,4 +37,4 @@ sudo apt install -y htop
 
 # restart
 cd ~
-make restart
+shimamon restart
