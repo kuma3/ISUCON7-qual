@@ -1,0 +1,12 @@
+logs
+*.log
+*.tmp
+tmp
+*cache/
+.bash_*
+.vim/
+
+.npm/
+
+.bundle/
+vendor/bundle
