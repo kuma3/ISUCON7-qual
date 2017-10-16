@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# make a directory for backup
+mkdir ~/backup
+
 # create shimamon and simamon commands
 # shimamonがいなかったら書き込む
 if ! grep -q "shimamon" ~/.bash_profile 2>/dev/null; then
