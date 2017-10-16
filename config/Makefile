@@ -44,7 +44,7 @@ nginx-backup: ## Make nginx.conf Backup to ~/backup/
 	@cp /etc/nginx/nginx.conf ${BACKUP_DIR}/nginx_`date "+%Y%m%d_%H%M%S".conf` \
 		&& echo 'done!'
 
-alp: ## Run alp [arg = alp option]
+alp: ## Run alp [arg=<alp option>]
 	@sudo alp ${arg} ${NGINX_ACCESS_LOG}
 
 db-restart: ## Restart MySQL
