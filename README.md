@@ -10,17 +10,17 @@ $ git pull upstream master
 $ git config --global user.name "John Doe"
 $ git config --global user.email johndoe@example.com
 ```
-    - masterに上書きする場合
-    ```bash
-    $ git branch --set-upstream-to=upstream/master master
-    ```
-    - 別branchを作成する場合
-    ```bash
-    $ git checkout -b shimamon
-    $ git branch shimamon upstream/shimamon
-    $ git pull upstream shimamon
-    $ git branch --set-upstream-to=upstream/shimamon master
-    ```
+  - masterに上書きする場合
+```bash
+  $ git branch --set-upstream-to=upstream/master master
+```
+- 別branchを作成する場合
+```bash
+  $ git checkout -b shimamon
+  $ git branch shimamon upstream/shimamon
+  $ git pull upstream shimamon
+  $ git branch --set-upstream-to=upstream/shimamon master
+```
 
 2. ~/config/Makefile のパラメータを書き換える.
 
