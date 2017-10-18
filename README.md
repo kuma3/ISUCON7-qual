@@ -14,12 +14,10 @@ $ git config --global user.email johndoe@example.com
 ```bash
   $ git branch --set-upstream-to=upstream/master master
 ```
-- 別branchを作成する場合
+  - 別branchを作成する場合
 ```bash
-  $ git checkout -b shimamon
-  $ git branch shimamon upstream/shimamon
-  $ git pull upstream shimamon
-  $ git branch --set-upstream-to=upstream/shimamon master
+  $ git checkout -b shimamon upstream/master
+  $ git push -u upstream shimamon
 ```
 
 2. ~/config/Makefile のパラメータを書き換える.
