@@ -6,7 +6,7 @@ mkdir ~/backup
 # create shimamon and simamon commands
 # shimamonがいなかったら書き込む
 if ! grep -q "shimamon" ~/.bash_profile 2>/dev/null; then
-  cat ./bash_profile >> ~/.bash_profile && source ~/.bash_profile;
+  cat ~/config/bash_profile >> ~/.bash_profile && source ~/.bash_profile;
 fi
 
 # make mysql and nginx backup
