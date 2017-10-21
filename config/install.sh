@@ -32,10 +32,9 @@ rm -f alp_linux_amd64
 # pt-query
 sudo apt install -y libdbd-mysql-perl libdbi-perl libio-socket-ssl-perl libnet-ssleay-perl
 cd /tmp
-wget https://www.percona.com/downloads/percona-toolkit/3.0.4/binary/debian/xenial/x86_64/percona-toolkit_3.0.4-1.xenial_amd64.deb \
-  percona-toolkit.deb
-sudo dpkg -i percona-toolkit.deb
-rm -f percona-toolkit.deb
+wget https://www.percona.com/downloads/percona-toolkit/3.0.4/binary/debian/xenial/x86_64/percona-toolkit_3.0.4-1.xenial_amd64.deb
+sudo dpkg -i percona-toolkit_3.0.4-1.xenial_amd64.deb
+rm -f percona-toolkit_3.0.4-1.xenial_amd64.deb
 
 # netdata
 cd /tmp
