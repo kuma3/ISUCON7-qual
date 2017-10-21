@@ -1,16 +1,19 @@
 #!/bin/bash
 
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+
 # make a directory for backup
 mkdir ~/backup
 
 # create shimamon and simamon commands
 # shimamonがいなかったら書き込む
 if ! grep -q "shimamon" ~/.bash_profile 2>/dev/null; then
-  cat ~/config/bash_profile >> ~/.bash_profile && source ~/.bash_profile;
+  cat ~/config/bash_profile >> ~/.bash_profile;
 fi
 
 # make mysql and nginx backup
-shimamon backup-all
+cd ${SCRIPT_DIR}
+make backup-all
 
 # editor
 sudo apt install -y emacs vim
@@ -45,4 +48,6 @@ rm -f kickstart.sh
 sudo apt install -y htop
 
 # restart services
-shimamon restart
+cd ${SCRIPT_DIR}
+make restart
+
