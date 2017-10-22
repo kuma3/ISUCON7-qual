@@ -1,6 +1,7 @@
 require 'digest/sha1'
 require 'mysql2'
 require 'sinatra/base'
+require 'redis'
 
 class App < Sinatra::Base
   configure do
@@ -33,12 +34,21 @@ class App < Sinatra::Base
     end
   end
 
+  def redis
+    Thread.current[:redis] ||= Redis.new(path: '/tmp/redis.sock')
+  end
+
+  def redis_key_for_image(filename)
+    "img_#{filename}"
+  end
+
   get '/initialize' do
     db.query("DELETE FROM user WHERE id > 1000")
     db.query("DELETE FROM image WHERE id > 1001")
     db.query("DELETE FROM channel WHERE id > 10")
     db.query("DELETE FROM message WHERE id > 10000")
     db.query("DELETE FROM haveread")
+    redis.flushall
     204
   end
 
@@ -303,9 +313,10 @@ class App < Sinatra::Base
     end
 
     if !avatar_name.nil? && !avatar_data.nil?
-      statement = db.prepare('INSERT INTO image (name, data) VALUES (?, ?)')
-      statement.execute(avatar_name, avatar_data)
-      statement.close
+      # statement = db.prepare('INSERT INTO image (name, data) VALUES (?, ?)')
+      # statement.execute(avatar_name, avatar_data)
+      # statement.close
+      redis.hmset(avatar_name, avatar_data)
       statement = db.prepare('UPDATE user SET avatar_icon = ? WHERE id = ?')
       statement.execute(avatar_name, user['id'])
       statement.close
@@ -322,9 +333,10 @@ class App < Sinatra::Base
 
   get '/icons/:file_name' do
     file_name = params[:file_name]
-    statement = db.prepare('SELECT * FROM image WHERE name = ?')
-    row = statement.execute(file_name).first
-    statement.close
+    # statement = db.prepare('SELECT * FROM image WHERE name = ?')
+    # row = statement.execute(file_name).first
+    # statement.close
+    row = redis.hmget(file_name).to_a
     ext = file_name.include?('.') ? File.extname(file_name) : ''
     mime = ext2mime(ext)
     if !row.nil? && !mime.empty?
