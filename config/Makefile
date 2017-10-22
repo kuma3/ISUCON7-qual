@@ -45,7 +45,7 @@ nginx-backup: ## Make nginx.conf Backup to ~/backup/
 		&& echo 'done!'
 
 alp: ## Run alp [arg=<alp option>]
-	@sudo alp ${arg} ${NGINX_ACCESS_LOG}
+	@sudo alp ${arg} -f ${NGINX_ACCESS_LOG}
 
 db-restart: ## Restart MySQL
 	@echo -n 'Restarting MySQL... '
@@ -85,7 +85,7 @@ service-status: ## Show Status of Service
 backup-all: ## Make Nginx and Mysql Bakup
 	@make -s nginx-backup db-backup
 
-clean-log:
+clean-log: ## Clean Log Files
 	@sudo rm -f ${NGINX_ACCESS_LOG} ${NGINX_ERROR_LOG} ${MYSQL_LOG} ${MYSQL_SLOW_LOG} \
 		&& echo "${NGINX_ACCESS_LOG}, ${NGINX_ERROR_LOG}, ${MYSQL_LOG}, and ${MYSQL_SLOW_LOG} have been removed!"
 
