@@ -27,7 +27,7 @@ cd /tmp
 wget https://github.com/tkuchiki/alp/releases/download/v0.3.1/alp_linux_amd64.zip
 unzip alp_linux_amd64
 sudo mv -f alp /usr/local/bin/
-rm -f alp_linux_amd64
+rm -f alp_linux_amd64.zip
 
 # pt-query
 sudo apt install -y libdbd-mysql-perl libdbi-perl libio-socket-ssl-perl libnet-ssleay-perl
