@@ -8,3 +8,4 @@ gem 'redis'
 gem 'hiredis'
 
 gem 'rack-lineprof'
+gem 'puma_worker_killer'
