@@ -317,7 +317,7 @@ class App < Sinatra::Base
       # statement = db.prepare('INSERT INTO image (name, data) VALUES (?, ?)')
       # statement.execute(avatar_name, avatar_data)
       # statement.close
-      redis.hmset(avatar_name, avatar_data)
+      redis.hset(avatar_name, 'img', avatar_data)
       statement = db.prepare('UPDATE user SET avatar_icon = ? WHERE id = ?')
       statement.execute(avatar_name, user['id'])
       statement.close
@@ -337,7 +337,7 @@ class App < Sinatra::Base
     # statement = db.prepare('SELECT * FROM image WHERE name = ?')
     # row = statement.execute(file_name).first
     # statement.close
-    row = redis.hmget(file_name).to_a
+    row = redis.hget(file_name, 'img').to_a
     ext = file_name.include?('.') ? File.extname(file_name) : ''
     mime = ext2mime(ext)
     if !row.nil? && !mime.empty?
