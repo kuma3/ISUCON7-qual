@@ -4,8 +4,11 @@ require 'sinatra/base'
 require 'redis'
 require 'hiredis'
 require 'pp'
+require 'rack-lineprof'
 
 class App < Sinatra::Base
+  use Rack::Lineprof, profile: 'app.rb'
+
   configure do
     set :session_secret, 'tonymoris'
     set :public_folder, File.expand_path('../../public', __FILE__)
@@ -130,21 +133,21 @@ class App < Sinatra::Base
 
     channel_id = params[:channel_id].to_i
     last_message_id = params[:last_message_id].to_i
-
-    statement = db.prepare('SELECT M.id, M.created_at AS date, M.content, U.name, U.display_name, U.avatar_icon' +
-                           'FROM message M INNER JOIN users ON M.user_id = U.id ' +
+=begin
+    statement = db.prepare('SELECT M.id AS id, DATE_FORMAT(M.created_at, "%Y/%m/%d %H:%M:%S") AS date, M.content AS content, U.name AS name, U.display_name, U.avatar_icon ' +
+                           'FROM message M INNER JOIN user U ON M.user_id = U.id ' +
                            'WHERE M.id > ? AND M.channel_id = ? ' +
                            'ORDER BY M.id DESC LIMIT 100')
     rows = statement.execute(last_message_id, channel_id).to_a.reverse!
+=end
 
-=begin
     statement = db.prepare('SELECT * FROM message WHERE id > ? AND channel_id = ? ORDER BY id DESC LIMIT 100')
     rows = statement.execute(last_message_id, channel_id).to_a
     response = []
     rows.each do |row|
       r = {}
       r['id'] = row['id']
-      statement = db.prepare('SELECT name, display_name, avatar_icon FROM user WHERE id = ?')
+      statement = db.prepare('SELECT name, display_name, avatar_icon FROM user WHERE id = ? LIMIT 1')
       r['user'] = statement.execute(row['user_id']).first
       r['date'] = row['created_at'].strftime("%Y/%m/%d %H:%M:%S")
       r['content'] = row['content']
@@ -152,7 +155,6 @@ class App < Sinatra::Base
       statement.close
     end
     response.reverse!
-=end
 
     max_message_id = rows.empty? ? 0 : rows.map { |row| row['id'] }.max
     statement = db.prepare([
@@ -324,10 +326,10 @@ class App < Sinatra::Base
     end
 
     if !avatar_name.nil? && !avatar_data.nil?
-      # statement = db.prepare('INSERT INTO image (name, data) VALUES (?, ?)')
-      # statement.execute(avatar_name, avatar_data)
-      # statement.close
-      redis.hset(avatar_name, 'img', avatar_data)
+      statement = db.prepare('INSERT INTO image (name, data) VALUES (?, ?)')
+      statement.execute(avatar_name, avatar_data)
+      statement.close
+      #redis.hset(avatar_name, 'img', avatar_data)
       statement = db.prepare('UPDATE user SET avatar_icon = ? WHERE id = ?')
       statement.execute(avatar_name, user['id'])
       statement.close
@@ -344,15 +346,15 @@ class App < Sinatra::Base
 
   get '/icons/:file_name' do
     file_name = params[:file_name]
-    # statement = db.prepare('SELECT * FROM image WHERE name = ? LIMIT 1')
-    # row = statement.execute(file_name).first
-    # statement.close
-    row = redis.hget(file_name, 'img').to_a
+    statement = db.prepare('SELECT data FROM image WHERE name = ? LIMIT 1')
+    row = statement.execute(file_name).first
+    statement.close
+    #row = redis.hget(file_name, 'img').to_a
     ext = file_name.include?('.') ? File.extname(file_name) : ''
     mime = ext2mime(ext)
     if !row.nil? && !mime.empty?
       content_type mime
-      pp row
+      #pp row
       return row['data']
     end
     404
@@ -404,7 +406,7 @@ class App < Sinatra::Base
   end
 
   def get_channel_list_info(focus_channel_id = nil)
-    channels = db.query('SELECT id, description FROM channel ORDER BY id').to_a
+    channels = db.query('SELECT * FROM channel ORDER BY id').to_a
     description = ''
     channels.each do |channel|
       if channel['id'] == focus_channel_id
