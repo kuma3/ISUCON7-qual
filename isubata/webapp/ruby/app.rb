@@ -50,7 +50,7 @@ class App < Sinatra::Base
     db.query("DELETE FROM channel WHERE id > 10")
     db.query("DELETE FROM message WHERE id > 10000")
     db.query("DELETE FROM haveread")
-    redis.flushall
+    # redis.flushall
     204
   end
 
@@ -335,16 +335,20 @@ class App < Sinatra::Base
 
   get '/icons/:file_name' do
     file_name = params[:file_name]
-    # statement = db.prepare('SELECT * FROM image WHERE name = ? LIMIT 1')
-    # row = statement.execute(file_name).first
-    # statement.close
-    row = redis.hget(file_name, 'img').to_a
-    ext = file_name.include?('.') ? File.extname(file_name) : ''
+    row = redis.hget(file_name, 'img')
+    if row.nil? 
+      statement = db.prepare('SELECT * FROM image WHERE name = ? LIMIT 1')
+      row = statement.execute(file_name).first
+      statement.close
+      redis.hset(file_name, 'img', row['data'])
+      row = row['data']
+    end
+    
+    ext = file_name.include?('.') ? File.extname(file_name) : '' 
     mime = ext2mime(ext)
     if !row.nil? && !mime.empty?
       content_type mime
-      pp row
-      return row['data']
+      return row
     end
     404
   end
@@ -395,7 +399,7 @@ class App < Sinatra::Base
   end
 
   def get_channel_list_info(focus_channel_id = nil)
-    channels = db.query('SELECT id, description FROM channel ORDER BY id').to_a
+    channels = db.query('SELECT * FROM channel ORDER BY id').to_a
     description = ''
     channels.each do |channel|
       if channel['id'] == focus_channel_id
