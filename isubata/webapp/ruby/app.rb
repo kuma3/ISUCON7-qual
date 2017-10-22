@@ -182,7 +182,7 @@ class App < Sinatra::Base
 
     res = []
     channel_ids.each do |channel_id|
-      statement = db.prepare('SELECT * FROM haveread WHERE user_id = ? AND channel_id = ? LIMIT 1')
+      statement = db.prepare('SELECT message_id FROM haveread WHERE user_id = ? AND channel_id = ? LIMIT 1')
       row = statement.execute(user_id, channel_id).first
       statement.close
       r = {}
