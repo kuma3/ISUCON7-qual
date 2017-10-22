@@ -1,7 +1,8 @@
 BACKUP_DIR = ~/backup
 
-RUBY_SERVICE_NAME = isuda.ruby isutar.ruby
-RUBY_SOURCE_DIR = ~/webapp/ruby
+RUBY_SERVICE_NAME = isubata.ruby
+
+RUBY_SOURCE_DIR = ~/isubata/webapp/ruby/
 
 NGINX_ACCESS_LOG = /var/log/nginx/access.log
 NGINX_ERROR_LOG = /var/log/nginx/error.log
