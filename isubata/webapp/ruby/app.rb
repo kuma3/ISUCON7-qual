@@ -129,6 +129,14 @@ class App < Sinatra::Base
 
     channel_id = params[:channel_id].to_i
     last_message_id = params[:last_message_id].to_i
+
+    statement = db.prepare('SELECT M.id, M.created_at AS date, M.content, U.name, U.display_name, U.avatar_icon' +
+                           'FROM message M INNER JOIN users ON M.user_id = U.id ' +
+                           'WHERE M.id > ? AND M.channel_id = ? ' +
+                           'ORDER BY M.id DESC LIMIT 100')
+    rows = statement.execute(last_message_id, channel_id).to_a.reverse!
+
+=begin
     statement = db.prepare('SELECT * FROM message WHERE id > ? AND channel_id = ? ORDER BY id DESC LIMIT 100')
     rows = statement.execute(last_message_id, channel_id).to_a
     response = []
@@ -143,6 +151,7 @@ class App < Sinatra::Base
       statement.close
     end
     response.reverse!
+=end
 
     max_message_id = rows.empty? ? 0 : rows.map { |row| row['id'] }.max
     statement = db.prepare([
