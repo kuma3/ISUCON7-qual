@@ -4,6 +4,7 @@ require 'sinatra/base'
 require 'redis'
 require 'hiredis'
 require 'pp'
+require 'puma_worker_killer'
 
 class App < Sinatra::Base
   configure do
