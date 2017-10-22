@@ -36,7 +36,7 @@ class App < Sinatra::Base
   end
 
   def redis
-    Thread.current[:redis] ||= Redis.new(path: '/tmp/redis.sock', driver: :hiredis)
+    Thread.current[:redis] ||= Redis.new(path: '/var/run/redis/redis.sock', driver: :hiredis)
   end
 
   def redis_key_for_image(filename)
@@ -147,7 +147,7 @@ class App < Sinatra::Base
     max_message_id = rows.empty? ? 0 : rows.map { |row| row['id'] }.max
     statement = db.prepare([
       'INSERT INTO haveread (user_id, channel_id, message_id, updated_at, created_at) ',
-      'VALUES (?, ?, ?, NOW(), NOW()) ',
+      'VALUES (?, ?, ?, NO(), NOW()) ',
       'ON DUPLICATE KEY UPDATE message_id = ?, updated_at = NOW()',
     ].join)
     statement.execute(user_id, channel_id, max_message_id, max_message_id)
@@ -342,6 +342,7 @@ class App < Sinatra::Base
     mime = ext2mime(ext)
     if !row.nil? && !mime.empty?
       content_type mime
+      pp row
       return row['data']
     end
     404
