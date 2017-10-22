@@ -5,8 +5,11 @@ require 'redis'
 require 'hiredis'
 require 'pp'
 require 'puma_worker_killer'
+require 'rack-lineprof'
 
 class App < Sinatra::Base
+  use Rack::Lineprof, profile: 'app.rb'
+
   configure do
     set :session_secret, 'tonymoris'
     set :public_folder, File.expand_path('../../public', __FILE__)
@@ -131,13 +134,21 @@ class App < Sinatra::Base
 
     channel_id = params[:channel_id].to_i
     last_message_id = params[:last_message_id].to_i
+=begin
+    statement = db.prepare('SELECT M.id AS id, DATE_FORMAT(M.created_at, "%Y/%m/%d %H:%M:%S") AS date, M.content AS content, U.name AS name, U.display_name, U.avatar_icon ' +
+                           'FROM message M INNER JOIN user U ON M.user_id = U.id ' +
+                           'WHERE M.id > ? AND M.channel_id = ? ' +
+                           'ORDER BY M.id DESC LIMIT 100')
+    rows = statement.execute(last_message_id, channel_id).to_a.reverse!
+=end
+
     statement = db.prepare('SELECT * FROM message WHERE id > ? AND channel_id = ? ORDER BY id DESC LIMIT 100')
     rows = statement.execute(last_message_id, channel_id).to_a
     response = []
     rows.each do |row|
       r = {}
       r['id'] = row['id']
-      statement = db.prepare('SELECT name, display_name, avatar_icon FROM user WHERE id = ?')
+      statement = db.prepare('SELECT name, display_name, avatar_icon FROM user WHERE id = ? LIMIT 1')
       r['user'] = statement.execute(row['user_id']).first
       r['date'] = row['created_at'].strftime("%Y/%m/%d %H:%M:%S")
       r['content'] = row['content']
@@ -316,10 +327,10 @@ class App < Sinatra::Base
     end
 
     if !avatar_name.nil? && !avatar_data.nil?
-      # statement = db.prepare('INSERT INTO image (name, data) VALUES (?, ?)')
-      # statement.execute(avatar_name, avatar_data)
-      # statement.close
-      redis.hset(avatar_name, 'img', avatar_data)
+      statement = db.prepare('INSERT INTO image (name, data) VALUES (?, ?)')
+      statement.execute(avatar_name, avatar_data)
+      statement.close
+      #redis.hset(avatar_name, 'img', avatar_data)
       statement = db.prepare('UPDATE user SET avatar_icon = ? WHERE id = ?')
       statement.execute(avatar_name, user['id'])
       statement.close
