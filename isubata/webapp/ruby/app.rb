@@ -2,6 +2,7 @@ require 'digest/sha1'
 require 'mysql2'
 require 'sinatra/base'
 require 'redis'
+require 'hiredis'
 
 class App < Sinatra::Base
   configure do
@@ -35,7 +36,7 @@ class App < Sinatra::Base
   end
 
   def redis
-    Thread.current[:redis] ||= Redis.new(path: '/tmp/redis.sock')
+    Thread.current[:redis] ||= Redis.new(path: '/tmp/redis.sock', driver: :hiredis)
   end
 
   def redis_key_for_image(filename)
